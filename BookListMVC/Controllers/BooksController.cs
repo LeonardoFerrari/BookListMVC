@@ -12,6 +12,9 @@ namespace BookListMVC.Controllers
     {
         private readonly ApplicationDbContext _db;
 
+        [BindProperty]
+        public Book Book { get; set; }
+
         public BooksController(ApplicationDbContext db) // Dependency Injection
         {
             _db = db;
@@ -19,6 +22,23 @@ namespace BookListMVC.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+        public IActionResult Upsert(int? Id)
+        {
+            Book = new Book();
+            if (Id == null)
+            {
+                // Criar
+                return View(Book);
+            }
+
+            Book = _db.Books.FirstOrDefault(u => u.Id == Id);
+            if (Book == null)
+            {
+                return NotFound();
+            }
+            
+            return View(Book);
         }
 
         #region API Calls
